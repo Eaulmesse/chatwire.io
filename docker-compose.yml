@@ -1,10 +1,24 @@
 services:
   api:
     build: .
-    # Force l'utilisation du polling via nodemon si nest start --watch échoue
     command: npm run start:dev 
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     ports:
       - "3000:3000"
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    ports:
+    - "5432:5432" 
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
