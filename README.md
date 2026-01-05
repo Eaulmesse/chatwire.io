@@ -39,16 +39,13 @@ The application follows a modular NestJS structure where each domain is isolated
    * JWT_SECRET (Secret key for authentication tokens)
 
 ### Deployment with Docker
-Start the infrastructure services:
+
 ```bash
+Start the infrastructure services:
 docker-compose up -d
 
 Apply database schema migrations:
-
-```bash
 npx prisma migrate dev
 
 Launch the application in watch mode:
-
-```bash
 npm run start:dev
