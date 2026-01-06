@@ -3,7 +3,7 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { Conversation, Prisma} from '@prisma/client'
 import { PrismaService } from 'src/prisma.services';
-import { userInfo } from 'os';
+
 
 @Injectable()
 export class ConversationsService {
@@ -24,7 +24,7 @@ export class ConversationsService {
     cursor?: Prisma.ConversationWhereUniqueInput;
     where?: Prisma.ConversationWhereInput;
     orderBy?: Prisma.ConversationOrderByWithRelationInput;
-    }): Promise<Conversation[]> {
+    } = {}): Promise<Conversation[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.conversation.findMany({
       skip,
@@ -35,21 +35,32 @@ export class ConversationsService {
     });
   }
 
-  async createParticipant(data: Prisma.ConversationCreateInput): Promise<Conversation> {
+  async createConversation(creatorId: string, dto: CreateConversationDto): Promise<Conversation> {
+    const allParticipantsIds = [creatorId, ...dto.participantIds];
     return this.prisma.conversation.create({
-      data,
+      data: {
+        participants: {
+          create: allParticipantsIds.map((id) => ({
+            user: {
+              connect: { id: id}
+            }
+          }))
+        }
+      },
+      include: {
+        participants: {
+          include: { user: true}
+        }
+      }
     });
   }
 
-  async updateParticipant(params: {
+  async updateConversation(params: {
     where: Prisma.ConversationWhereUniqueInput;
-    data: Prisma.ConversationUpdateInput;
+    data: UpdateConversationDto;
     }): Promise<Conversation> {
     const { where, data } = params;
-    return this.prisma.conversation.update({
-      data,
-      where,
-    });
+    return this.prisma.conversation.update(params);
   }
 
   async deleteConversation(where: Prisma.ConversationWhereUniqueInput): Promise<Conversation> {
