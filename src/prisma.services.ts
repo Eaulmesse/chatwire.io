@@ -4,16 +4,16 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
 @Injectable()
-export class PrismaService extends PrismaClient implements OnModuleInit {
+export class PrismaService implements OnModuleInit {
+  public client: PrismaClient; // On crée une propriété publique
+
   constructor() {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-    
     const adapter = new PrismaPg(pool);
-
-    super({ adapter });
+    this.client = new PrismaClient({ adapter });
   }
 
   async onModuleInit() {
-    await this.$connect();
+    await this.client.$connect();
   }
 }

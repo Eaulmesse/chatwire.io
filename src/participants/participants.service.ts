@@ -12,7 +12,7 @@ export class ParticipantsService {
   async findById(
     participantWhereUniqueInput: Prisma.ParticipantWhereUniqueInput,
     ): Promise<Participant | null> {
-    return this.prisma.participant.findUnique({
+    return this.prisma.client.participant.findUnique({
       where: participantWhereUniqueInput
     });
   }
@@ -25,7 +25,7 @@ export class ParticipantsService {
     orderBy?: Prisma.ParticipantOrderByWithRelationInput;
     } = {}): Promise<Participant[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.participant.findMany({
+    return this.prisma.client.participant.findMany({
       skip,
       take,
       cursor,
@@ -35,7 +35,7 @@ export class ParticipantsService {
   }
 
   async createParticipant(dto: CreateParticipantDto) {
-  return this.prisma.participant.create({
+  return this.prisma.client.participant.create({
       data: {
         user: {
           connect: { id: dto.userId }
@@ -48,7 +48,7 @@ export class ParticipantsService {
   }
 
   async updateParticipant(id: string, updateParticipantDto: UpdateParticipantDto) {
-    return this.prisma.participant.update({
+    return this.prisma.client.participant.update({
         where: { id },
         data: {
           ...(updateParticipantDto.userId && {
@@ -63,7 +63,7 @@ export class ParticipantsService {
   
 
   async deleteParticipant(where: Prisma.ParticipantWhereUniqueInput): Promise<Participant> {
-    return this.prisma.participant.delete({
+    return this.prisma.client.participant.delete({
       where,
     });
   }

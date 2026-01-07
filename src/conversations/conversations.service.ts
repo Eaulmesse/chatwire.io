@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
-import { Conversation, Prisma} from '@prisma/client'
+import { Conversation, Prisma } from '@prisma/client'
 import { PrismaService } from 'src/prisma.services';
 
 
@@ -13,7 +13,7 @@ export class ConversationsService {
   async findById(
     conversationtWhereUniqueInput: Prisma.ConversationWhereUniqueInput,
     ): Promise<Conversation | null> {
-    return this.prisma.conversation.findUnique({
+    return this.prisma.client.conversation.findUnique({
       where: conversationtWhereUniqueInput
     });
   }
@@ -26,7 +26,7 @@ export class ConversationsService {
     orderBy?: Prisma.ConversationOrderByWithRelationInput;
     } = {}): Promise<Conversation[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.conversation.findMany({
+    return this.prisma.client.conversation.findMany({
       skip,
       take,
       cursor,
@@ -37,19 +37,19 @@ export class ConversationsService {
 
   async createConversation(creatorId: string, dto: CreateConversationDto): Promise<Conversation> {
     const allParticipantsIds = [creatorId, ...dto.participantIds];
-    return this.prisma.conversation.create({
+    return this.prisma.client.conversation.create({
       data: {
         participants: {
-          create: allParticipantsIds.map((id) => ({
+          create: allParticipantsIds.map(id => ({
             user: {
-              connect: { id: id}
+              connect: { id: id }
             }
           }))
         }
       },
       include: {
         participants: {
-          include: { user: true}
+          include: { user: true }
         }
       }
     });
@@ -60,11 +60,11 @@ export class ConversationsService {
     data: UpdateConversationDto;
     }): Promise<Conversation> {
     const { where, data } = params;
-    return this.prisma.conversation.update(params);
+    return this.prisma.client.conversation.update(params);
   }
 
   async deleteConversation(where: Prisma.ConversationWhereUniqueInput): Promise<Conversation> {
-    return this.prisma.conversation.delete({
+    return this.prisma.client.conversation.delete({
       where,
     });
   }
@@ -77,7 +77,7 @@ export class ConversationsService {
       orderBy?: Prisma.ConversationOrderByWithRelationInput;
     }
     ){
-    return this.prisma.conversation.findMany({
+    return this.prisma.client.conversation.findMany({
       skip: params.skip,
       take: params.take,
       cursor: params.cursor,
@@ -106,7 +106,7 @@ export class ConversationsService {
 
   async findOneWithParticipants(conversationtWhereUniqueInput: Prisma.ConversationWhereUniqueInput,
     ): Promise<Conversation | null> {
-    return this.prisma.conversation.findUnique({
+    return this.prisma.client.conversation.findUnique({
       where: conversationtWhereUniqueInput,
       include: {
         participants: {
@@ -126,7 +126,7 @@ export class ConversationsService {
   }
 
   async findDirectMessage(userId: string, targetId: string): Promise<Conversation | null> {
-    return this.prisma.conversation.findFirst({
+    return this.prisma.client.conversation.findFirst({
       where: {
         AND: [
           { participants: { some: { userId: userId }}},

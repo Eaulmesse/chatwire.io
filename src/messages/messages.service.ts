@@ -12,7 +12,7 @@ export class MessagesService {
   async findById(
     messageWhereUniqueInput: Prisma.MessageWhereUniqueInput,
   ): Promise<Message | null> {
-    return this.prisma.message.findUnique({
+    return this.prisma.client.message.findUnique({
       where: messageWhereUniqueInput
     });
   }
@@ -25,7 +25,7 @@ export class MessagesService {
     orderBy?: Prisma.MessageOrderByWithRelationInput;
   } = {} ): Promise<Message[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.message.findMany({
+    return this.prisma.client.message.findMany({
       skip,
       take,
       cursor,
@@ -35,7 +35,7 @@ export class MessagesService {
   }
 
   async createMessage(dto: CreateMessageDto) {
-    return this.prisma.message.create({
+    return this.prisma.client.message.create({
       data: {
         content: dto.content,
         sender: { connect: { id: dto.senderId }},
@@ -49,14 +49,14 @@ export class MessagesService {
     data: Prisma.MessageUpdateInput;
   }): Promise<Message> {
     const { where, data } = params;
-    return this.prisma.message.update({
+    return this.prisma.client.message.update({
       data,
       where,
     });
   }
 
   async deleteMessage(where: Prisma.MessageWhereUniqueInput): Promise<Message> {
-    return this.prisma.message.delete({
+    return this.prisma.client.message.delete({
       where,
     });
   }
