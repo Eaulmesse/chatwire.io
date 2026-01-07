@@ -13,6 +13,14 @@ export class UsersService {
       where: userWhereUniqueInput
     });
   }
+
+  async findByUsername(username: string): Promise<User | null> {
+    return this.prisma.client.user.findFirst({
+      where: {
+        username: username,
+      },
+    });
+  }
   
   async findMany(params: {
     skip?: number;
