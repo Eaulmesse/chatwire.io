@@ -8,27 +8,28 @@ export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 
   @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messagesService.create(createMessageDto);
+  create(
+    @Body() createMessageDto: CreateMessageDto) {
+    return this.messagesService.createMessage(createMessageDto);
   }
 
   @Get()
   findAll() {
-    return this.messagesService.findAll();
+    return this.messagesService.findMany();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.messagesService.findOne(+id);
+    return this.messagesService.findById({ id });
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messagesService.update(+id, updateMessageDto);
+    return this.messagesService.updateMessage({ where: { id }, data: updateMessageDto});
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.messagesService.remove(+id);
+    return this.messagesService.deleteMessage({ id });
   }
 }

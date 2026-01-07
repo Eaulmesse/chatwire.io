@@ -3,6 +3,7 @@ import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { Message, Prisma} from '@prisma/client'
 import { PrismaService } from 'src/prisma.services';
+import { connect } from 'http2';
 
 @Injectable()
 export class MessagesService {
@@ -22,7 +23,7 @@ export class MessagesService {
     cursor?: Prisma.MessageWhereUniqueInput;
     where?: Prisma.MessageWhereInput;
     orderBy?: Prisma.MessageOrderByWithRelationInput;
-  }): Promise<Message[]> {
+  } = {} ): Promise<Message[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.message.findMany({
       skip,
@@ -33,9 +34,13 @@ export class MessagesService {
     });
   }
 
-  async createMessage(data: Prisma.MessageCreateInput): Promise<Message> {
+  async createMessage(dto: CreateMessageDto) {
     return this.prisma.message.create({
-      data,
+      data: {
+        content: dto.content,
+        sender: { connect: { id: dto.senderId }},
+        conversation: { connect: { id: dto.conversationId } }
+      },
     });
   }
 

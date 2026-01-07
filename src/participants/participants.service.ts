@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateParticipantDto } from './dto/create-participant.dto';
-import { UpdateParticipantDto } from './dto/update-participant.dto';
 import { Participant, Prisma} from '@prisma/client'
 import { PrismaService } from 'src/prisma.services';
+import { CreateParticipantDto } from './dto/create-participant.dto';
+import { UpdateParticipantDto } from './dto/update-participant.dto';
 
 
 @Injectable()
@@ -23,7 +23,7 @@ export class ParticipantsService {
     cursor?: Prisma.ParticipantWhereUniqueInput;
     where?: Prisma.ParticipantWhereInput;
     orderBy?: Prisma.ParticipantOrderByWithRelationInput;
-    }): Promise<Participant[]> {
+    } = {}): Promise<Participant[]> {
     const { skip, take, cursor, where, orderBy } = params;
     return this.prisma.participant.findMany({
       skip,
@@ -34,22 +34,33 @@ export class ParticipantsService {
     });
   }
 
-  async createParticipant(data: Prisma.ParticipantCreateInput): Promise<Participant> {
-    return this.prisma.participant.create({
-      data,
+  async createParticipant(dto: CreateParticipantDto) {
+  return this.prisma.participant.create({
+      data: {
+        user: {
+          connect: { id: dto.userId }
+        },
+        conversation: {
+          connect: { id: dto.conversationId }
+        }
+      }
     });
   }
 
-  async updateParticipant(params: {
-    where: Prisma.ParticipantWhereUniqueInput;
-    data: Prisma.ParticipantUpdateInput;
-    }): Promise<Participant> {
-    const { where, data } = params;
+  async updateParticipant(id: string, updateParticipantDto: UpdateParticipantDto) {
     return this.prisma.participant.update({
-      data,
-      where,
+        where: { id },
+        data: {
+          ...(updateParticipantDto.userId && {
+            user: { connect: { id: updateParticipantDto.userId } }
+          }),
+          ...(updateParticipantDto.conversationId && {
+            conversation: { connect: { id: updateParticipantDto.conversationId } }
+          }),
+        },
     });
-  }
+  };
+  
 
   async deleteParticipant(where: Prisma.ParticipantWhereUniqueInput): Promise<Participant> {
     return this.prisma.participant.delete({
