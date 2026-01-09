@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 
 @Injectable()
 export class PrismaService implements OnModuleInit {
-  public client: PrismaClient; // On crée une propriété publique
+  public client: PrismaClient; 
 
   constructor() {
     const pool = new Pool({ connectionString: process.env.DATABASE_URL });
